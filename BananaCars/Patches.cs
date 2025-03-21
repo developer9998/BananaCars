@@ -7,7 +7,7 @@ using Valve.VR;
 
 namespace BananaCars
 {
-    [HarmonyPatch(typeof(Player))]
+    [HarmonyPatch(typeof(GTPlayer))]
     public class Patches
     {
         // Configuration
@@ -34,7 +34,7 @@ namespace BananaCars
         private static float driftTransition = 0;
 
         [HarmonyPatch("LateUpdate"), HarmonyPrefix, HarmonyWrapSafe]
-        public static void LatePatch(Player __instance)
+        public static void LatePatch(GTPlayer __instance)
         {
             PlayerLayerMask = __instance.locomotionEnabledLayers;
             Rigidbody = __instance.bodyCollider.attachedRigidbody;
@@ -43,7 +43,7 @@ namespace BananaCars
             if (Steam == null || !Steam.HasValue)
             {
                 // use the "platform" field in the PlayFabAuthenticator class, reflection is needed as this field is private
-                Steam = Traverse.Create(PlayFabAuthenticator.instance).Field("platform").GetValue().ToString().ToLower() == "steam";
+                Steam = PlayFabAuthenticator.instance.platform.PlatformTag.ToLower() == "steam";
             }
 
             if (Steam.Value)
@@ -134,7 +134,7 @@ namespace BananaCars
             if (AbsoluteSpeed > 0.02f && hasDownPlane)
             {
                 // move the player on the ground based on where we're looking, then factor in the speed and scale of the player
-                Rigidbody.velocity = RollDirection.normalized * Speed * Player.Instance.scale;
+                Rigidbody.velocity = RollDirection.normalized * Speed * GTPlayer.Instance.scale;
             }
 
             // if a hand is touching or sliding on an object
@@ -146,7 +146,7 @@ namespace BananaCars
         }
 
         [HarmonyPatch("FixedUpdate"), HarmonyPrefix]
-        public static bool FixedPatch(Player __instance)
+        public static bool FixedPatch(GTPlayer __instance)
         {
             // TODO: patch this out when the player is moving (in the car) but perform non swimming and levitation calculations
             return true;

@@ -1,9 +1,12 @@
 ﻿using BepInEx;
 using HarmonyLib;
+using Utilla.Attributes;
 
 namespace BananaCars
 {
-    [BepInPlugin(Constants.Guid, Constants.Name, Constants.Version), BepInDependency("dev.tillahook", BepInDependency.DependencyFlags.SoftDependency)]
+    [ModdedGamemode]
+    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
+    [BepInPlugin(Constants.Guid, Constants.Name, Constants.Version)]
     public class Plugin : BaseUnityPlugin
     {
         private Harmony harmony;
@@ -13,20 +16,17 @@ namespace BananaCars
         public void Awake()
         {
             Configuration.Init(Config);
-            TillaHook.TillaHook.OnModdedJoin += OnRoomJoined;
-            TillaHook.TillaHook.OnModdedLeave += OnRoomLeft;
-            //TillaHook.TillaHook.Hook.AddGameMode(gameMode: null, OnRoomJoined, OnRoomLeft);
         }
 
 
-        // [ModdedGamemodeJoin]
+        [ModdedGamemodeJoin]
         public void OnRoomJoined(string gamemode)
         {
             inModdedRoom = true;
             Patch();
         }
 
-        // [ModdedGamemodeLeave]
+        [ModdedGamemodeLeave]
         public void OnRoomLeft(string gamemode)
         {
             inModdedRoom = false;
